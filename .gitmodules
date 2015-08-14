@@ -1,0 +1,3 @@
+[submodule "titanic"]
+	path = titanic
+	url = https://github.com/eignatenkov/titanic
