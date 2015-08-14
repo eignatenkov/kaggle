@@ -1,0 +1,17 @@
+library(caret)
+library(randomForest)
+titanic<-read.csv('c:/docs/private/titanic/train.csv')
+titanic<-titanic
+meanAge<-mean(titanic$Age,na.rm=TRUE)
+titanic$Age[is.na(titanic$Age)]<-meanAge
+titanic$Survived<-as.factor(titanic$Survived)
+test<-read.csv('c:/docs/private/titanic/test.csv')
+test$Age[is.na(test$Age)]=mean(test$Age,na.rm=TRUE)
+test[153,9]<-mean(test$Fare[test$Pclass==3],na.rm=TRUE)
+levels(test$Embarked)<-c("","C","Q","S")
+fit6<-randomForest(Survived~.,data=titanic[,-c(1,4,9,11)])
+confusionMatrix(predict(fit6,newdata=titanic),titanic$Survived)
+pTest3<-predict(fit6,newdata=test)
+result<-data.frame(test$PassengerId,pTest3)
+colnames(result)<-c("PassengerID","Survived")
+write.csv(result,'c:/docs/private/titanic/randomtree.csv',row.names=FALSE)

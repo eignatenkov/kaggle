@@ -1,0 +1,15 @@
+library(caret)
+titanic<-read.csv('~/kaggle/titanic/train.csv')
+titanic<-titanic
+meanAge<-mean(titanic$Age,na.rm=TRUE)
+titanic$Age[is.na(titanic$Age)]<-meanAge
+test<-read.csv('~/kaggle/titanic/test.csv')
+titanic$Survived<-as.factor(titanic$Survived)
+test$Age[is.na(test$Age)]=mean(test$Age,na.rm=TRUE)
+test[153,9]<-mean(test$Fare[test$Pclass==3],na.rm=TRUE)
+fit6<-train(Survived~.,data=titanic[,c(-4,-9,-11)],method='gbm',verbose=FALSE)
+confusionMatrix(predict(fit6,newdata=titanic),titanic$Survived)
+pTest3<-predict(fit6,newdata=test)
+result<-data.frame(test$PassengerId,pTest3)
+colnames(result)<-c("PassengerID","Survived")
+write.csv(result,'~/kaggle/titanic/result_gbm_verbose.csv',row.names=FALSE)

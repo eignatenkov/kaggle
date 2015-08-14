@@ -1,0 +1,17 @@
+#74%
+library(caret)
+titanic<-read.csv('~/Dropbox/titanic/train.csv')
+titanic<-titanic
+meanAge<-mean(titanic$Age,na.rm=TRUE)
+titanic$Age[is.na(titanic$Age)]<-meanAge
+test<-read.csv('~/Dropbox/titanic/test.csv')
+titanic$Survived<-as.factor(titanic$Survived)
+test$Age[is.na(test$Age)]=mean(test$Age,na.rm=TRUE)
+test[153,9]<-mean(test$Fare[test$Pclass==3],na.rm=TRUE)
+fit6<-glm(Survived~.,data=titanic,family=binomial)
+confusionMatrix(predict(fit6,newdata=titanic),titanic$Survived)
+pTest3<-predict(fit6,newdata=test,type="response")
+pred=ifelse(pTest3<.5,0,1)
+result<-data.frame(test$PassengerId,pred)
+colnames(result)<-c("PassengerID","Survived")
+write.csv(result,'~/Dropbox/titanic/logistic.csv',row.names=FALSE)
